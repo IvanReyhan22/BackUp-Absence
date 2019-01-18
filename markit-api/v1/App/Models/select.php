@@ -124,14 +124,32 @@
 		// Month report
 		//
 		public function monthreport ($params) {
-			$sql = 
-			"SELECT * FROM `kehadiran` WHERE `user_id` = :user_id && `kantor_id` = :kantor_id && `tanggal` LIKE %:tanggal% ";
-			foreach ($params AS $input -> $value){
+			$sql = "SELECT * FROM `kehadiran` WHERE `tanggal` LIKE '%:tanggal%' && `user_id` = ':user_id' && `kantor_id` = ':kantor_id'";
+
+			foreach ($params AS $input => $value){
 				$sql = str_replace($input,$value,$sql);
 			}
 			$stats= $this->db->prepare ($sql);
 			$stats->execute($params);
 			return $stats->fetchAll(PDO::FETCH_ASSOC);
+			
+		}
+
+		//
+		// Month Count
+		//
+		public function hitung ($params) {			
+			$count = "SELECT COUNT(detail) AS many FROM `kehadiran` WHERE `tanggal` LIKE '%:tanggal%' && `user_id` = ':user_id' && `detail` = ':detail' ";
+			
+			foreach( $params AS $key => $value ) {
+                $sql = str_replace( $key, $value, $count );
+			}
+
+            $select = $this->db->prepare($count);
+        
+            $select->execute($params);
+    
+            return $select->fetchAll(PDO::FETCH_ASSOC);
 			
 		}
 	}	

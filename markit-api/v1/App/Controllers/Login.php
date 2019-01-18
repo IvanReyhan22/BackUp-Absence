@@ -49,7 +49,7 @@
             return $response->withJSON (array(
                 "status" => false,
                 "data" => $data
-            ));
+            )); 
         }	
 		
     }

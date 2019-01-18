@@ -1,9 +1,8 @@
 <?php
 $this->post ('/present', \Kehadiran::class . ":present");
 $this->post ('/absent', \Kehadiran::class . ":absent");
+$this->post ('/verify', \Kehadiran::class . ":verifiedPresent");
 $this->post ('/cantcome', \Kehadiran::class . ":cantCome");
-
-$this->get ('/now', \Get::class . ":getNow");
 
 	class Kehadiran extends MarkIt {
 		
@@ -13,32 +12,26 @@ $this->get ('/now', \Get::class . ":getNow");
     public function present ( $request, $response, $args ) {
 
         // Initialize model
-        $this->initModel("select");
+        $this->initModel("kehadiran");
 		// Get request params
 		$this->params = $request->getParsedBody();
 
         // Insert data
-        $data = $this->kehadiranModel->addPresent ( array(
+        $data = $this->kehadiranModel->addPresent( array(
 			':lokasi' =>$this->params['lokasi'],
 			':waktu' =>$this->params['waktu'],
 			':tanggal' =>$this->params['tanggal'],
 			':user_id' =>$this->params['user_id'],
 			':kantor_id' =>$this->params['kantor_id'],
-			':status' =>$this->params['status']
+			':status' =>0,
+			':detail' =>$this->params['detail'],
 		));
 		
 		if ( $data ) {
             // Return feedback data
             return $response->withJSON ( array (
 			    "status"    => true,
-				"data"      => array(
-					':lokasi' =>$this->params['lokasi'],
-					':waktu' =>$this->params['waktu'],
-					':tanggal' =>$this->params['tanggal'],
-					':user-id' =>$this->params['user_id'],
-					':kantor_id' =>$this->params['kantor_id'],
-					':status' =>$thid->params['status']
-				)
+				"data"      => $data
             ));
         }
         // Return feedback data
@@ -103,7 +96,7 @@ $this->get ('/now', \Get::class . ":getNow");
 			':waktu' =>$this->params['waktu'],
 			':user_id' =>$this->params['user_id'],
 			':kantor_id' =>$this->params['kantor_id'],
-			':status' => "unverified",
+			':status' => "false",
 			':detail' =>$this->params['detail'],
 			':reason' =>$this->params['reason']
 		));
@@ -131,7 +124,35 @@ $this->get ('/now', \Get::class . ":getNow");
 			"massage" => "Sending Failed Please Try Again"
 		));
 		
+	}
+
+	public function verifiedPresent ( $request, $response, $args ) {
+
+        // Initialize model
+        $this->initModel("kehadiran");
+		// Get request params
+		$this->params = $request->getParsedBody();
+
+        // Insert data
+        $data = $this->kehadiranModel->verifikasi ( array(
+			':user_id' =>$this->params['user_id'], 
+			':tanggal' =>$this->params['tanggal'], 
+			':status' =>1,
+			
+		));
 		
+		if ( $data ) {
+            // Return feedback data
+            return $response->withJSON ( array (
+			    "status" => true,
+				"data" => $data,
+            ));
+        }
+        // Return feedback data
+        return $response->withJSON ( array (
+            "status" => false
+        ));
+
 	}
 
 	//get if already absent

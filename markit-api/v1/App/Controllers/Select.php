@@ -10,6 +10,7 @@
     $this->post ('/getuser',\getData::class . ":getUserData");
     $this->post ('/getstats',\getData::class . ":getAbsentStats");
     $this->post ('/getmonthreport',\getData::class . ":monthReport");
+    $this->post ('/getcount',\getData::class . ":getCount");
 
 	
     class getData extends MarkIt {
@@ -276,6 +277,31 @@
 			));
 		
 		
+        }
+        
+        public function getCount ($request, $response, $args ) {
+			//model
+			$this-> initModel ("select");
+			$this->params = $request->getParsedBody();
+			$data =$this->selectModel->hitung( array(
+				":user_id" => $this->params["user_id"],
+                ":detail" => $this->params["detail"],
+                ":tanggal" => $this->params["tanggal"]
+			));
+
+			//Return data                           
+			if($data){
+			return $response->withJSON (array(
+				"status" => true,
+				"data" => $data
+			));
+		
+			}
+		
+			return $response->withJSON (array(
+				"status" => true,
+				"data" => $data
+			));
 		}
     }
 ?>

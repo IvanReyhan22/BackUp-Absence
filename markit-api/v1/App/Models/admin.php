@@ -25,7 +25,6 @@
             
 
             return $update->execute($params);
-            
 		}
 
 		
